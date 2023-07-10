@@ -6,6 +6,7 @@ This action sends a notification to a Slack channel. It allows you to specify th
 
 This action has the following inputs:
 
+- `webhook`: Slack webhook.
 - `title`: This is the title of the message. This is required.
 - `text`: This is the text of the message. This is required.
 - `color`: This is the color of the message. This is required.
@@ -21,6 +22,7 @@ steps:
   - name: 'Send notification to Slack'
     uses: Connected2FiberTeam/cb-actions-slack@main
     with:
+      webhook: ${{ secrets.SLACK_WEBHOOK }}
       title: 'Build Succeeded'
       text: 'The build has completed successfully.'
       color: '#008000'
