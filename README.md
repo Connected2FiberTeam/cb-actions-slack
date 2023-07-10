@@ -20,7 +20,7 @@ steps:
   - name: 'Checkout'
     uses: actions/checkout@v2
   - name: 'Send notification to Slack'
-    uses: org-name/slack-notification-action@main
+    uses: Connected2FiberTeam/cb-actions-slack@main
     with:
       webhook: ${{ secrets.SLACK_WEBHOOK }}
       title: 'Build Succeeded'
