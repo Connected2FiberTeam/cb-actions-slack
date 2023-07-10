@@ -1,0 +1,28 @@
+name: 'Slack notification action'
+description: 'Send a notification to Slack'
+inputs:
+  webhook:
+    description: 'Slack webhook URL'
+    required: true
+  title:
+    description: 'Title of the message'
+    required: true
+  text:
+    description: 'Text of the message'
+    required: true
+  color:
+    description: 'Color of the message'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        TIMESTAMP=$(date +%s)
+        ATTACHMENT_JSON=$(jq -n \
+                            --arg title "${{ inputs.title }}" \
+                            --arg text "${{ inputs.text }}" \
+                            --arg color "${{ inputs.color }}" \
+                            --arg ts "$TIMESTAMP" \
+                            '{ attachments: [ { title: $title, text: $text, color: $color, ts: $ts } ] }')
+        curl -X POST -H 'Content-type: application/json' --data "$ATTACHMENT_JSON" ${{ inputs.webhook }}
+      shell: bash
