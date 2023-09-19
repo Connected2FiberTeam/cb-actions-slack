@@ -13,16 +13,29 @@ inputs:
   color:
     description: 'Color of the message'
     required: true
+  mentions:
+    description: 'Comma-separated list of people to notify'
+    required: false
 runs:
   using: 'composite'
   steps:
     - run: |
         TIMESTAMP=$(date +%s)
+        
+        # Append mentions if provided
+        if [ -n "${{ inputs.mentions }}" ]; then
+            MENTIONS=$(echo "${{ inputs.mentions }}" | sed "s/,/ /g")
+            TEXT_WITH_MENTIONS="${{ inputs.text }} ${MENTIONS}"
+        else
+            TEXT_WITH_MENTIONS="${{ inputs.text }}"
+        fi
+
         ATTACHMENT_JSON=$(jq -n \
                             --arg title "${{ inputs.title }}" \
-                            --arg text "${{ inputs.text }}" \
+                            --arg text "$TEXT_WITH_MENTIONS" \
                             --arg color "${{ inputs.color }}" \
                             --arg ts "$TIMESTAMP" \
                             '{ attachments: [ { title: $title, text: $text, color: $color, ts: $ts } ] }')
+                            
         curl -X POST -H 'Content-type: application/json' --data "$ATTACHMENT_JSON" ${{ inputs.webhook }}
       shell: bash
